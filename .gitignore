@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# VSCode and PyCharm config
+.vscode/
+.idea/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Python-pip environment
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+.coverage
+.tox/
+
+# Environment variable files
+.env
+.env.*
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# MyPy
+.mypy_cache/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Local database or test data
+*.db
+*.sqlite3
+
+# FastAPI / Swagger UI cache
+static/
+generated/
+
+# MacOS / Linux
+.DS_Store
+*.swp
+models/
+
+sql/

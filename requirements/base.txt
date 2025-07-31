@@ -1,0 +1,25 @@
+# Framework principal
+fastapi==0.109.2
+uvicorn[standard]==0.27.0
+
+# PostgreSQL et ORM async
+sqlalchemy==2.0.29
+asyncpg==0.29.0
+
+# Validation des données
+pydantic==2.6.4
+pydantic-settings==2.2.1
+
+# Sécurité JWT
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# Async support
+anyio==4.3.0
+
+# LangChain et LLMs
+langchain==0.1.13
+langchain-community==0.0.29
+openai==1.14.3
+tiktoken==0.6.0
