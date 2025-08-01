@@ -11,7 +11,6 @@ RUN python3 -m venv .venv
 
 RUN .venv/bin/pip install --upgrade pip
 RUN .venv/bin/pip install --no-cache-dir -r requirements/dev.txt --index-url https://pypi.org/simple
-COPY models/ models/
 
 copy .env .env
 

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 router = APIRouter()
-@router.post("/")
+@router.get("/")
 async def welcome():
     try:
         return {"message": "Welcome to the API!"}
