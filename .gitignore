@@ -59,6 +59,5 @@ generated/
 # MacOS / Linux
 .DS_Store
 *.swp
-models/
 
 sql/
