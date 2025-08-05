@@ -36,7 +36,7 @@ coverage.xml
 
 # Environment variable files
 .env
-.env.*
+.env
 
 # Jupyter Notebook
 .ipynb_checkpoints
