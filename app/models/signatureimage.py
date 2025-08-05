@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import date
 from app.models import Base
@@ -8,7 +8,7 @@ class SignatureImage(Base):
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     id_user = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    signature = Column(String(500), nullable=False)
+    signature = Column(Text, nullable=False)
     datesignature = Column(Date, default=date.today, nullable=False)
     
     # Relation avec User
