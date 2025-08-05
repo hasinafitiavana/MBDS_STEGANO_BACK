@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.core.database import get_session
-from app.services.user_service import UserService
+from app.services.user_service import user_service
 from app.schemas.users import UserCreate, UserUpdate, UserResponse
 
 router = APIRouter()
@@ -13,7 +13,7 @@ async def create_user(
     db: AsyncSession = Depends(get_session)
 ):
     try:
-        user = await UserService.create_user(db, user_data)
+        user = await user_service.create_user(db, user_data)
         return user
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -27,7 +27,7 @@ async def get_users(
     db: AsyncSession = Depends(get_session)
 ):
     try:
-        users = await UserService.get_users(db, skip=skip, limit=limit)
+        users = await user_service.get_users(db, skip=skip, limit=limit)
         return users
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -38,7 +38,7 @@ async def get_user(
     db: AsyncSession = Depends(get_session)
 ):
     try:
-        user = await UserService.get_user_by_id(db, user_id)
+        user = await user_service.get_user_by_id(db, user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return user
@@ -54,7 +54,7 @@ async def update_user(
     db: AsyncSession = Depends(get_session)
 ):
     try:
-        user = await UserService.update_user(db, user_id, user_data)
+        user = await user_service.update_user(db, user_id, user_data)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return user
@@ -71,7 +71,7 @@ async def delete_user(
     db: AsyncSession = Depends(get_session)
 ):
     try:
-        deleted = await UserService.delete_user(db, user_id)
+        deleted = await user_service.delete_user(db, user_id)
         if not deleted:
             raise HTTPException(status_code=404, detail="User not found")
         return None

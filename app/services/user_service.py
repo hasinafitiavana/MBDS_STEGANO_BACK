@@ -1,63 +1,49 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError
+from app.repositories.user_repository import UserRepository
 from app.models.users import User
 from app.schemas.users import UserCreate, UserUpdate
 from typing import List, Optional
 
 class UserService:
+    def __init__(self):
+        self.user_repository = UserRepository()
     
-    @staticmethod
-    async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
+    async def create_user(self, db: AsyncSession, user_data: UserCreate) -> User:
+        # Check if login already exists
+        if await self.user_repository.login_exists(db, user_data.login):
+            raise ValueError("Login already exists")
+        
         try:
-            db_user = User(**user_data.dict())
-            db.add(db_user)
-            await db.commit()
-            await db.refresh(db_user)
-            return db_user
+            return await self.user_repository.create(db, **user_data.dict())
         except IntegrityError:
             await db.rollback()
             raise ValueError("Login already exists")
     
-    @staticmethod
-    async def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
-        result = await db.execute(select(User).where(User.id == user_id))
-        return result.scalar_one_or_none()
+    async def get_user_by_id(self, db: AsyncSession, user_id: int) -> Optional[User]:
+        return await self.user_repository.get_by_id(db, user_id)
     
-    @staticmethod
-    async def get_user_by_login(db: AsyncSession, login: str) -> Optional[User]:
-        result = await db.execute(select(User).where(User.login == login))
-        return result.scalar_one_or_none()
+    async def get_user_by_login(self, db: AsyncSession, login: str) -> Optional[User]:
+        return await self.user_repository.get_by_login(db, login)
     
-    @staticmethod
-    async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[User]:
-        result = await db.execute(select(User).offset(skip).limit(limit))
-        return result.scalars().all()
+    async def get_users(self, db: AsyncSession, skip: int = 0, limit: int = 100) -> List[User]:
+        return await self.user_repository.get_all(db, skip=skip, limit=limit)
     
-    @staticmethod
-    async def update_user(db: AsyncSession, user_id: int, user_data: UserUpdate) -> Optional[User]:
-        db_user = await UserService.get_user_by_id(db, user_id)
-        if not db_user:
-            return None
-        
+    async def update_user(self, db: AsyncSession, user_id: int, user_data: UserUpdate) -> Optional[User]:
         update_data = user_data.dict(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(db_user, field, value)
+        
+        # Check if login already exists (exclude current user)
+        if "login" in update_data:
+            if await self.user_repository.login_exists(db, update_data["login"], exclude_id=user_id):
+                raise ValueError("Login already exists")
         
         try:
-            await db.commit()
-            await db.refresh(db_user)
-            return db_user
+            return await self.user_repository.update(db, user_id, **update_data)
         except IntegrityError:
             await db.rollback()
             raise ValueError("Login already exists")
     
-    @staticmethod
-    async def delete_user(db: AsyncSession, user_id: int) -> bool:
-        db_user = await UserService.get_user_by_id(db, user_id)
-        if not db_user:
-            return False
-        
-        await db.delete(db_user)
-        await db.commit()
-        return True
+    async def delete_user(self, db: AsyncSession, user_id: int) -> bool:
+        return await self.user_repository.delete(db, user_id)
+
+user_service = UserService()

@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
 
 app = FastAPI(
-    title="Field Filler API",
+    title="Stegano API",
     description="API for steganography application",
     version="1.0.0",
     lifespan=lifespan
