@@ -11,7 +11,6 @@ class UserService:
         self.user_repository = UserRepository()
 
     async def create_user(self, db: AsyncSession, user_data: UserCreate) -> User:
-        # Check if login already exists
         if await self.user_repository.login_exists(db, user_data.login):
             raise ValueError("Login already exists")
 
