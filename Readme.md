@@ -1,13 +1,34 @@
-@echo off
+# MBDS_STEGANO_BACK
 
-if "%1"=="env" (
-    python -m venv .venv
-)
+Backend FastAPI pour le projet MBDS Stegano.
 
-if "%1"=="install-dev" (
-    .venv\Scripts\pip install -r requirements\dev.txt
-)
 
-if "%1"=="start" (
-    .venv\Scripts\uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
-)
+## Installation et utilisation
+
+Tout est géré via le script batch `make.bat`.
+
+### 1. Créer l'environnement virtuel
+
+```cmd
+make.bat env
+```
+
+### 2. Installer les dépendances pour le développement
+
+```cmd
+make.bat install-dev
+```
+
+### 3. Lancer le serveur en mode développement
+
+```cmd
+make.bat start
+```
+
+
+
+### 4 affichage doc api
+
+```cmd
+http://localhost:8080/docs
+```
