@@ -17,6 +17,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 bearer_scheme = HTTPBearer()
 token_blacklist = set()
 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     now = datetime.utcnow()
@@ -24,8 +25,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = now + expires_delta
     else:
         expire = now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire, "iat": now})
+    to_encode.update({"exp": int(expire.timestamp()), "iat": int(now.timestamp())})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 def decode_access_token(token: str) -> dict:
     try:
@@ -35,6 +37,7 @@ def decode_access_token(token: str) -> dict:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
     except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
                            db: AsyncSession = Depends(get_session)):
@@ -49,6 +52,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(b
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
 
 def revoke_token(token: str) -> None:
     token_blacklist.add(token)

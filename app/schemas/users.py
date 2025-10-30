@@ -20,6 +20,7 @@ class UserResponse(UserBase):
     
     class Config:
         from_attributes = True
+        orm_mode = True
 
 class LoginRequest(BaseModel):
     login: str
@@ -28,3 +29,8 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserResponse

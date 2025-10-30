@@ -94,7 +94,8 @@ async def login(credentials: LoginRequest, db: AsyncSession = Depends(get_sessio
     user = await user_service.get_user_by_login(db, credentials.login)
     if not user or not verify_password(credentials.mdp, user.mdp):
         raise HTTPException(status_code=401, detail="Unauthorized")
-    token = create_access_token({"sub": str(user.id)})
+    user_payload = UserResponse.from_orm(user).dict()
+    token = create_access_token({"user": user_payload})
     return {"access_token": token, "token_type": "bearer"}
 
 
