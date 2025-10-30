@@ -3,12 +3,15 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+from app.core import get_settings
 from app.services.user_service import user_service
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_session
 
-SECRET_KEY = "change_me_in_prod"
-ALGORITHM = "HS256"
+settings = get_settings()
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 bearer_scheme = HTTPBearer()

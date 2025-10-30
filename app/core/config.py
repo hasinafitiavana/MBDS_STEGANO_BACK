@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     MY_SQL_DB: str
     MY_SQL_HOST: str = "mysql"
     MY_SQL_PORT: int = 3306
+    SECRET_KEY: str = "secret_key_1234"
+    ALGORITHM: str = "HS256"
 
     @property
     def DATABASE_URL(self) -> str:
