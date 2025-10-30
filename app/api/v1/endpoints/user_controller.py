@@ -3,7 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.core.database import get_session
 from app.services.user_service import user_service
-from app.schemas.users import UserCreate, UserUpdate, UserResponse
+from app.schemas.users import UserCreate, UserUpdate, UserResponse, LoginRequest, TokenResponse
+from app.core.security import verify_password
+from app.core.auth import create_access_token, revoke_token, bearer_scheme, get_current_user
+from fastapi.security import HTTPAuthorizationCredentials
 
 router = APIRouter()
 
@@ -84,3 +87,18 @@ async def delete_user(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/login", response_model=TokenResponse)
+async def login(credentials: LoginRequest, db: AsyncSession = Depends(get_session)):
+    user = await user_service.get_user_by_login(db, credentials.login)
+    if not user or not verify_password(credentials.mdp, user.mdp):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token = create_access_token({"sub": str(user.id)})
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/logout")
+async def logout(auth: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    revoke_token(auth.credentials)
+    return {"detail": "Logged out"}

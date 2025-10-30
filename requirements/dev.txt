@@ -17,3 +17,6 @@ ipython==8.22.2
 
 # Password hashing
 passlib==1.7.4
+
+# JWT tokens
+PyJWT==2.8.0

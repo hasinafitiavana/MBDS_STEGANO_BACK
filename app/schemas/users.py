@@ -20,3 +20,11 @@ class UserResponse(UserBase):
     
     class Config:
         from_attributes = True
+
+class LoginRequest(BaseModel):
+    login: str
+    mdp: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
