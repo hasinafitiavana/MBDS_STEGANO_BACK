@@ -4,6 +4,7 @@ from app.repositories.user_repository import UserRepository
 from app.models.users import User
 from app.schemas.users import UserCreate, UserUpdate
 from typing import List, Optional
+from app.core.security import get_password_hash  # added import
 
 
 class UserService:
@@ -15,7 +16,10 @@ class UserService:
             raise ValueError("Login already exists")
 
         try:
-            return await self.user_repository.create(db, **user_data.dict())
+            # hash password before creating
+            data = user_data.dict()
+            data["mdp"] = get_password_hash(data["mdp"])
+            return await self.user_repository.create(db, **data)
         except IntegrityError:
             await db.rollback()
             raise ValueError("Login already exists")
@@ -37,6 +41,8 @@ class UserService:
                 raise ValueError("Login already exists")
 
         try:
+            if "mdp" in update_data and update_data["mdp"] is not None:
+                update_data["mdp"] = get_password_hash(update_data["mdp"])
             return await self.user_repository.update(db, user_id, **update_data)
         except IntegrityError:
             await db.rollback()
