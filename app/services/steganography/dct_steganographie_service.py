@@ -36,8 +36,8 @@ class DctSteganographieService:
         yuv[:, :, 0] = np.clip(np.round(Y), 0, 255).astype(np.uint8)
         return cv2.cvtColor(yuv, cv2.COLOR_YUV2BGR)
 
-    def extract_dct(self, stego_img, strength=35):
-        yuv = cv2.cvtColor(stego_img, cv2.COLOR_BGR2YUV)
+    def extract_dct(self, stegano_img, strength=35):
+        yuv = cv2.cvtColor(stegano_img, cv2.COLOR_BGR2YUV)
         Y = yuv[:, :, 0].astype(np.float32)
         bits = []
 

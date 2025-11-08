@@ -38,7 +38,7 @@ async def hideMessage(
     stego_bytes = buf.tobytes()
 
     media_type = MIME_TYPES.get(output_ext, "application/octet-stream")
-    filename = f"stego_image.{output_ext}"
+    filename = f"stegano_image.{output_ext}"
     return Response(
         content=stego_bytes,
         media_type=media_type,
