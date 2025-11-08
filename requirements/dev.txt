@@ -20,3 +20,7 @@ passlib==1.7.4
 
 # JWT tokens
 PyJWT==2.8.0
+
+opencv-python-headless
+Pillow
+python-multipart
