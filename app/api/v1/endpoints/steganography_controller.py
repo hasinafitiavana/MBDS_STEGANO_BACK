@@ -99,6 +99,6 @@ async def extractMessage(
     print("Extracted user ID:", str(user.nom));
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return SteganoExtractReponse(secret_message=secret_message, nom=user.nom, prenom=user.prenom)
+    return SteganoExtractReponse(nom=user.nom, prenom=user.prenom)
 
     

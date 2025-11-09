@@ -15,7 +15,6 @@ class SteganoExtractRequest(BaseModel):
     stego_image_data: bytes
 
 class SteganoExtractReponse(BaseModel):
-    secret_message: str
     nom: str = None
     prenom: str = None
 
