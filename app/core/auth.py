@@ -18,7 +18,7 @@ bearer_scheme = HTTPBearer()
 token_blacklist = set()
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = timedelta(days=3)) -> str:
     to_encode = data.copy()
     now = datetime.utcnow()
     if expires_delta:
@@ -45,7 +45,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(b
     if token in token_blacklist:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revoked")
     payload = decode_access_token(token)
-    user_id = payload.get("sub")
+    user_id = payload.get("user", {}).get("id");
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
     user = await user_service.get_user_by_id(db, int(user_id))

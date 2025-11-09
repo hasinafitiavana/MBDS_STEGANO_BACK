@@ -2,8 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, R
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 from app.core.database import get_session
+from app.core.auth import get_current_user
 from app.schemas.stego_schema import SteganoReponse, SteganoRequest, SteganoExtractReponse,SteganoExtractRequest
 from app.services.steganography.f5_steganography_service import F5_stegano
+from app.services.cryptography.cryptography import SteganoCryptoService
+from app.services.user_service import user_service
 
 router = APIRouter()
 
@@ -18,8 +21,11 @@ async def hideMessage(
     image: Annotated[UploadFile, File(description="Le fichier image (PNG ou JPEG)")],
     secret_message: Annotated[str, Form(description="Le message secret à cacher")],
     format_output: Annotated[str, Form(description="Le format de sortie de l'image ('JPEG', 'png')")],
-    db: AsyncSession = Depends(get_session)
+    current_user: Annotated[object, Depends(get_current_user)] = None,
 ):
+    print("Current user ID:", current_user.id)
+    user_id=current_user.id
+    secret_message = SteganoCryptoService.encrypt_for_user(user_id);
     image_bytes = await image.read()
     stego_bytes = F5_stegano.hideSecretMessageInImage(
         image_bytes, 
@@ -28,7 +34,7 @@ async def hideMessage(
     )
     print("---------------------------------------------------------------------------------")
     output_format = format_output.lower().lstrip('.')
-    media_type = MIME_TYPES.get(output_format.lower, "application/octet-stream")
+    media_type = MIME_TYPES.get(output_format.lower(), "application/octet-stream")
     filename = f"stego_image.{output_format}"
     return Response(
         content=stego_bytes, 
@@ -42,10 +48,15 @@ async def hideMessage(
 @router.post("/extract", response_model=SteganoExtractReponse, status_code=201)
 async def extractMessage(
     stego_image: Annotated[UploadFile, File(description="L'image stéganographiée (JPEG)")],
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
 ):
     stego_bytes = await stego_image.read()
     secret_message = F5_stegano.extractSecretMessageFromImage(stego_bytes)
-    return SteganoExtractReponse(secret_message=secret_message)
+    user_id = SteganoCryptoService.decrypt_for_user(secret_message);
+    user = await user_service.get_user_by_id(db, int(user_id))
+    print("Extracted user ID:", str(user.nom));
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return SteganoExtractReponse(secret_message=secret_message, nom=user.nom, prenom=user.prenom)
 
     

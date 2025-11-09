@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     MY_SQL_PORT: int = 3306
     SECRET_KEY: str = "secret_key_1234"
     ALGORITHM: str = "HS256"
+    CRYPTO_MASTER_KEY: str = ""
+    CRYPTO_SALT_KEY: str = "salt"
 
     @property
     def DATABASE_URL(self) -> str:
