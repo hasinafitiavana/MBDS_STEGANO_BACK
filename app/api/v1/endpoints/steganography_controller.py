@@ -6,6 +6,7 @@ from app.core.auth import get_current_user
 from app.schemas.stego_schema import SteganoReponse, SteganoRequest, SteganoExtractReponse,SteganoExtractRequest
 from app.services.steganography.f5_steganography_service import F5_stegano
 from app.services.steganography.dct_steganographie_service import dctSteganographieService
+from app.services.steganography.lsb_steganography_service import lsbSteganographieService
 from app.services.cryptography.cryptography import SteganoCryptoService
 from app.services.user_service import user_service
 from app.core.config import get_settings
@@ -47,6 +48,12 @@ async def hideMessage(
                 secret_message,
                 format_output
             )
+        elif algo == "lsb":
+            stego_bytes = lsbSteganographieService.hideSecretMessageInImage(
+                image_bytes,
+                secret_message,
+                "png"
+            )
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported STEGANO_ALGO: {settings.STEGANO_ALGO}")
     except Exception:
@@ -78,11 +85,14 @@ async def extractMessage(
             secret_message = F5_stegano.extractSecretMessageFromImage(stego_bytes)
         elif algo == "dct" or algo == "dct_stegano":
             secret_message = dctSteganographieService.extractSecretMessageFromImage(stego_bytes)
+        elif algo == "lsb":
+            secret_message = lsbSteganographieService.extractSecretMessageFromImage(stego_bytes)
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported STEGANO_ALGO: {settings.STEGANO_ALGO}")
     except Exception:
         raise HTTPException(status_code=503, detail="Error when extracting message")
 
+    print("Extracted secret message:", secret_message);
     user_id = SteganoCryptoService.decrypt_for_user(secret_message)
     user = await user_service.get_user_by_id(db, int(user_id))
     print("Extracted user ID:", str(user.nom));
