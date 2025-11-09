@@ -1,3 +1,4 @@
+import app.models.users
 from pydantic import BaseModel
 from typing import Optional
 
@@ -15,4 +16,6 @@ class SteganoExtractRequest(BaseModel):
 
 class SteganoExtractReponse(BaseModel):
     secret_message: str
+    nom: str = None
+    prenom: str = None
 
