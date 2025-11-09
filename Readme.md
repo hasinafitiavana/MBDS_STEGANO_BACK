@@ -32,3 +32,10 @@ make.bat start
 ```cmd
 http://localhost:8080/docs
 ```
+
+
+### Docker 
+
+```cmd
+il y a un Dockerfile sur le projet pour pouvoir le lancer sur docker
+```
