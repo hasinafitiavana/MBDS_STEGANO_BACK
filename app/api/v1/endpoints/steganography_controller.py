@@ -102,9 +102,11 @@ async def extractMessage(
     except Exception:
         raise HTTPException(status_code=503, detail="Error when extracting message")
 
-    user_id = SteganoCryptoService.decrypt_for_user(secret_message)
+    try:
+        user_id = SteganoCryptoService.decrypt_for_user(secret_message)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="User not found")
     user = await user_service.get_user_by_id(db, int(user_id))
-    print("Extracted user ID:", str(user.nom));
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return SteganoExtractReponse(nom=user.nom, prenom=user.prenom)
