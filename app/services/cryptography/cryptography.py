@@ -53,12 +53,11 @@ class SteganoCryptoService:
         key = self._derive_key()
         chacha = ChaCha20Poly1305(key)
 
-        nonce = os.urandom(12)  # must be unique per (user_id, message)
+        nonce = os.urandom(12)
         aad_bytes = aad.encode("utf-8") if aad else None
         message = self._caesar_encode(str(user_id))
         ciphertext = chacha.encrypt(nonce, message.encode("utf-8"), aad_bytes)
 
-        # We concatenate nonce + ciphertext (ciphertext already includes Poly1305 tag)
         combined = nonce + ciphertext
         return base64.b64encode(combined).decode("utf-8")
 
